@@ -14,6 +14,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Plugins.Memory;
+using Spectre.Console;
 
 var builder = Kernel.CreateBuilder();
 builder.AddOpenAIChatCompletion(
@@ -27,25 +28,47 @@ Kernel kernel = builder.Build();
 
 var chat = kernel.GetRequiredService<IChatCompletionService>();
 var history = new ChatHistory();
-history.AddSystemMessage(@"You are a useful chatbot. 
-If you don't know an answer, say 'I don't know!'. 
-Always reply in a funny ways. Use emojis if possible.");
 
-while (true)
-{
-    Console.Write("Question:");
-    
-    var question = Console.ReadLine();
-    if (string.IsNullOrEmpty(question))
-    {
-        break;
+var choice = "";
+
+while(choice.ToLower() != "quit"){
+    choice = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("What do you want to do?")
+            .PageSize(10)
+            .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
+            .AddChoices(new[] {
+                "Chat", "Quit"
+            }));
+
+    if(choice.ToLower() == "chat"){
+
+        AnsiConsole.WriteLine($"I agree. Let's chat!");
+        AnsiConsole.WriteLine($"How are you?");
+        history.AddSystemMessage(@"You are a chatbot. You can answer questions and have conversations with me. If you don't know an answer, say 'I don't know!'. Reply with short answers. Don't write long paragraphs.");
+
+        while (true)
+        {
+            
+            AnsiConsole.Markup("[underline green]You:[/] ");
+            AnsiConsole.WriteLine("");
+            var question = Console.ReadLine();
+            if (string.IsNullOrEmpty(question))
+            {
+                break;
+            }
+
+            history.AddUserMessage(question);
+
+            var result = await chat.GetChatMessageContentsAsync(history);
+            
+            AnsiConsole.Markup("[underline yellow]Me:[/] ");
+            AnsiConsole.WriteLine("");
+            AnsiConsole.WriteLine(result[^1].Content);
+            
+            history.Add(result[^1]);
+        }
     }
 
-    history.AddUserMessage(question);
-
-    var result = await chat.GetChatMessageContentsAsync(history);
-    
-    Console.WriteLine(result[^1].Content);
-    
-    history.Add(result[^1]);
 }
+

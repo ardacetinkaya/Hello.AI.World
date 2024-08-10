@@ -16,18 +16,40 @@ using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Plugins.Memory;
 using Spectre.Console;
 
+
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();
+
+Settings? settings = config.Get<Settings>();
+
+
 var builder = Kernel.CreateBuilder();
 builder.AddOpenAIChatCompletion(
-    modelId: "phi3",
-    endpoint: new Uri("http://localhost:11434"),
-    apiKey: "apikey");
+    modelId: settings.ModelId,
+    endpoint: new Uri(settings.URI),
+    apiKey: settings.APIKey);
 
 
 builder.AddLocalTextEmbeddingGeneration();
 Kernel kernel = builder.Build();
 
 var chat = kernel.GetRequiredService<IChatCompletionService>();
-var history = new ChatHistory();
+OpenAIPromptExecutionSettings executionSettings = new() 
+{
+    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+    Temperature = 0.7,
+    MaxTokens = 1024,
+    TopP = 1
+
+};
+var history = new ChatHistory("""
+    You are a friendly assistant who likes to follow the rules. You will complete required steps
+    and request approval before taking any consequential actions. If the user doesn't provide
+    enough information for you to complete a task, you will keep asking questions until you have
+    enough information to complete the task.
+    """);
 
 var choice = "";
 
@@ -45,7 +67,7 @@ while(choice.ToLower() != "quit"){
 
         AnsiConsole.WriteLine($"I agree. Let's chat!");
         AnsiConsole.WriteLine($"How are you?");
-        history.AddSystemMessage(@"You are a chatbot. You can answer questions and have conversations with me. If you don't know an answer, say 'I don't know!'. Reply with short answers. Don't write long paragraphs.");
+        // history.AddSystemMessage(@"Answer questions in a short way. If you don't know an answer, say 'I don't know!'. Don't write long sentences.");
 
         while (true)
         {
@@ -60,7 +82,7 @@ while(choice.ToLower() != "quit"){
 
             history.AddUserMessage(question);
 
-            var result = await chat.GetChatMessageContentsAsync(history);
+            var result = await chat.GetChatMessageContentsAsync(history, executionSettings:executionSettings);
             
             AnsiConsole.Markup("[underline yellow]Me:[/] ");
             AnsiConsole.WriteLine("");

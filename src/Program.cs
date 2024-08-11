@@ -23,7 +23,7 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-Settings? settings = config.Get<Settings>();
+Settings settings = config.Get<Settings>();
 ////////
 
 //Build the Kernel
@@ -43,14 +43,22 @@ while (choice.ToLower() != "quit")
 {
     choice = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
-            .Title("What do you want to do?")
+            .Title(""""
+    __  __       __ __          ___     ____
+   / / / /___   / // /____     /   |   /  _/
+  / /_/ // _ \ / // // __ \   / /| |   / /  
+ / __  //  __// // // /_/ /  / ___ | _/ /   
+/_/ /_/ \___//_//_/ \____/  /_/  |_|/___/   
+                                            
+What do you want me to do?
+"""")
             .PageSize(10)
             .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
             .AddChoices(new[] {
-                "Chat","Suggest me a movie", "Quit"
+                "Chat with me","Suggest me a movie", "Quit"
             }));
 
-    if (choice == "Chat")
+    if (choice == "Chat with me")
     {
         var chat = kernel.GetRequiredService<IChatCompletionService>();
 
@@ -111,7 +119,7 @@ while (choice.ToLower() != "quit")
         //Store some mock data in memory
         await StoreInMemoryAsync(memoryWithCustomData, memoryName, settings);
 
-        AnsiConsole.WriteLine($"Tell me more about what are you looking for/");
+        AnsiConsole.WriteLine($"Tell me more about what are you looking for?");
 
         while (true)
         {

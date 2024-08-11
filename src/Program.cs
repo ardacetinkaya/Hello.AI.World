@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
+using Microsoft.KernelMemory.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -16,62 +17,66 @@ using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Plugins.Memory;
 using Spectre.Console;
 
-
+//Some standard configuration
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
     .Build();
 
 Settings? settings = config.Get<Settings>();
+////////
 
-
+//Build the Kernel
 var builder = Kernel.CreateBuilder();
 builder.AddOpenAIChatCompletion(
     modelId: settings.ModelId,
     endpoint: new Uri(settings.URI),
     apiKey: settings.APIKey);
 
-
 builder.AddLocalTextEmbeddingGeneration();
+
 Kernel kernel = builder.Build();
-
-var chat = kernel.GetRequiredService<IChatCompletionService>();
-OpenAIPromptExecutionSettings executionSettings = new() 
-{
-    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
-    Temperature = 0.7,
-    MaxTokens = 1024,
-    TopP = 1
-
-};
-var history = new ChatHistory("""
-    You are a friendly assistant who likes to follow the rules. You will complete required steps
-    and request approval before taking any consequential actions. If the user doesn't provide
-    enough information for you to complete a task, you will keep asking questions until you have
-    enough information to complete the task.
-    """);
+///////
 
 var choice = "";
-
-while(choice.ToLower() != "quit"){
+while (choice.ToLower() != "quit")
+{
     choice = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title("What do you want to do?")
             .PageSize(10)
             .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
             .AddChoices(new[] {
-                "Chat", "Quit"
+                "Chat","Suggest me a movie", "Quit"
             }));
 
-    if(choice.ToLower() == "chat"){
+    if (choice == "Chat")
+    {
+        var chat = kernel.GetRequiredService<IChatCompletionService>();
+
+        //Configure prompts execution settings
+        OpenAIPromptExecutionSettings executionSettings = new()
+        {
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+            // Controls randomness in the response, use lower to be more deterministic.
+            Temperature = 0.7,
+            //Limit the maximum output tokens for the model response.
+            MaxTokens = 1024,
+            // Controls text diversity by selecting the most probable words until a set probability is reached.
+            TopP = 1
+
+        };
+        //Define a system user prompt so that chat system can behave according to given prompt
+        var chatHistory = new ChatHistory("""
+            You are a friendly assistant. You will answer given questions. Answer them in short form, not long sentences.
+            If you can not answer, feel free to say I don't know.
+            """);
 
         AnsiConsole.WriteLine($"I agree. Let's chat!");
         AnsiConsole.WriteLine($"How are you?");
-        // history.AddSystemMessage(@"Answer questions in a short way. If you don't know an answer, say 'I don't know!'. Don't write long sentences.");
 
         while (true)
         {
-            
             AnsiConsole.Markup("[underline green]You:[/] ");
             AnsiConsole.WriteLine("");
             var question = Console.ReadLine();
@@ -80,17 +85,77 @@ while(choice.ToLower() != "quit"){
                 break;
             }
 
-            history.AddUserMessage(question);
+            chatHistory.AddUserMessage(question);
 
-            var result = await chat.GetChatMessageContentsAsync(history, executionSettings:executionSettings);
-            
+            IReadOnlyList<ChatMessageContent> result = await chat.GetChatMessageContentsAsync(chatHistory, executionSettings: executionSettings);
+
             AnsiConsole.Markup("[underline yellow]Me:[/] ");
             AnsiConsole.WriteLine("");
             AnsiConsole.WriteLine(result[^1].Content);
-            
-            history.Add(result[^1]);
+
+            chatHistory.Add(result[^1]);
+        }
+
+    }
+    else if (choice == "Suggest me a movie")
+    {
+
+        var memoryName = "BRAIN";
+        var textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+        //Build memory for Volatile local memory
+        var memoryWithCustomData = new MemoryBuilder()
+                    .WithTextEmbeddingGeneration(textEmbeddingGenerationService)
+                    .WithMemoryStore(new VolatileMemoryStore())
+                    .Build();
+
+        //Store some mock data in memory
+        await StoreInMemoryAsync(memoryWithCustomData, memoryName, settings);
+
+        AnsiConsole.WriteLine($"Tell me more about what are you looking for/");
+
+        while (true)
+        {
+            AnsiConsole.Markup("[underline green]You:[/] ");
+            AnsiConsole.WriteLine("");
+            var question = Console.ReadLine();
+            if (string.IsNullOrEmpty(question))
+            {
+                break;
+            }
+
+            //Search memory for given input
+            var memoryResults = memoryWithCustomData
+                                    .SearchAsync(memoryName, question, limit: 2, minRelevanceScore: 0.5);
+
+
+            AnsiConsole.Markup("[underline yellow]Me:[/] ");
+            AnsiConsole.WriteLine("");
+            await foreach (MemoryQueryResult memoryResult in memoryResults)
+            {
+                AnsiConsole.WriteLine(memoryResult.Metadata.Id);
+                AnsiConsole.WriteLine($"It is about; {memoryResult.Metadata.Description}");
+                AnsiConsole.WriteLine();
+                AnsiConsole.WriteLine("Relevance for your query is " + memoryResult.Relevance);
+                AnsiConsole.WriteLine();
+            }
+
+
         }
     }
 
+}
+
+
+async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Settings settings)
+{
+    foreach (var movie in settings.Movies)
+    {
+        await memory.SaveReferenceAsync(
+            collection: memoryName,
+            externalSourceName: "LOCAL",
+            externalId: movie.MovieName,
+            description: movie.Description,
+            text: movie.Description);
+    }
 }
 

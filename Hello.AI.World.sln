@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hello.AI.World", "src\Hello.AI.World.csproj", "{83F0213D-CE40-4C2E-9860-DBDB794DDF3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hello.AI.World", "src\Hello.AI.World.csproj", "{EE4DEABD-8586-44E8-9AF0-E42473C6C5E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{83F0213D-CE40-4C2E-9860-DBDB794DDF3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83F0213D-CE40-4C2E-9860-DBDB794DDF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83F0213D-CE40-4C2E-9860-DBDB794DDF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83F0213D-CE40-4C2E-9860-DBDB794DDF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE4DEABD-8586-44E8-9AF0-E42473C6C5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE4DEABD-8586-44E8-9AF0-E42473C6C5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE4DEABD-8586-44E8-9AF0-E42473C6C5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE4DEABD-8586-44E8-9AF0-E42473C6C5E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

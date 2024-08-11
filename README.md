@@ -23,3 +23,8 @@ I will try to update this repository to learn and play more.
 ![What](/img02.png)
 
 ![What](/img03.png)
+
+Some great resources to learn more about .NET Semantic Kernel APIs
+
+- https://learn.microsoft.com/en-us/semantic-kernel/overview/
+- https://github.com/microsoft/semantic-kernel

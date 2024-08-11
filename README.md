@@ -15,7 +15,7 @@ It can be run locally with Ollama for some LLM. There is also "devcontainer.json
 
 There is also new GitHub Marketplace for models(Preview) - https://github.com/marketplace/models It is currently in preview but check to try-out.
 
-I will try to update this repository to learn and play more.
+I will try to update this repository to learn and play more. And please feel free to share any feedback or help me out to figure out those, I will really appreciate...
 
 
 ![What](/img01.png)

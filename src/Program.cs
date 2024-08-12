@@ -81,47 +81,19 @@ What do you want me to do?
             """);
 
         AnsiConsole.WriteLine($"I agree. Let's chat!");
-        AnsiConsole.WriteLine($"How are you?");
 
-        while (true)
-        {
-            AnsiConsole.Markup("[underline green]You:[/] ");
-            AnsiConsole.WriteLine("");
-            var question = Console.ReadLine();
-            if (string.IsNullOrEmpty(question))
-            {
-                break;
-            }
-
-            chatHistory.AddUserMessage(question);
-
-            IReadOnlyList<ChatMessageContent> result = await chat.GetChatMessageContentsAsync(chatHistory, executionSettings: executionSettings);
-
-            AnsiConsole.Markup("[underline yellow]Me:[/] ");
-            AnsiConsole.WriteLine("");
-            AnsiConsole.WriteLine(result[^1].Content);
-
-            chatHistory.Add(result[^1]);
-        }
-
+        await LoopAsync(async (question) =>
+            await ProcessChatAsync(question, chat, chatHistory, executionSettings));
     }
     else if (choice == "Suggest me a movie")
     {
-
         var memoryName = "BRAIN";
-        var textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
-        //Build memory for Volatile local memory
-        var memoryWithCustomData = new MemoryBuilder()
-                    .WithTextEmbeddingGeneration(textEmbeddingGenerationService)
-                    .WithMemoryStore(new VolatileMemoryStore())
-                    .Build();
-
-        //Store some mock data in memory
-        await StoreInMemoryAsync(memoryWithCustomData, memoryName, settings);
+        var memoryWithCustomData = await GenerateMemory(memoryName);
 
         AnsiConsole.WriteLine($"Tell me more about what are you looking for?");
 
-        while (true)
+        await LoopAsync(async (question) =>
+            await ProcessMovieSuggestionAsync(question, memoryWithCustomData, memoryName));
         {
             AnsiConsole.Markup("[underline green]You:[/] ");
             AnsiConsole.WriteLine("");
@@ -153,6 +125,66 @@ What do you want me to do?
 
 }
 
+async Task LoopAsync(Func<string, Task> processInput)
+{
+    while (true)
+    {
+        AnsiConsole.Markup("[underline green]You:[/] ");
+        AnsiConsole.WriteLine("");
+        var input = Console.ReadLine();
+        if (string.IsNullOrEmpty(input))
+        {
+            break;
+        }
+
+        await processInput(input);
+    }
+}
+
+async Task ProcessChatAsync(string question, IChatCompletionService chat, ChatHistory chatHistory, OpenAIPromptExecutionSettings executionSettings)
+{
+    chatHistory.AddUserMessage(question);
+
+    IReadOnlyList<ChatMessageContent> result = await chat.GetChatMessageContentsAsync(chatHistory, executionSettings: executionSettings);
+
+    AnsiConsole.Markup("[underline yellow]Me:[/] ");
+    AnsiConsole.WriteLine("");
+    AnsiConsole.WriteLine(result[^1].Content);
+
+    chatHistory.Add(result[^1]);
+}
+
+async Task ProcessMovieSuggestionAsync(string question, ISemanticTextMemory memoryWithCustomData, string memoryName)
+{
+    var memoryResults = memoryWithCustomData
+                            .SearchAsync(memoryName, question, limit: 2, minRelevanceScore: 0.5);
+
+    AnsiConsole.Markup("[underline yellow]Me:[/] ");
+    AnsiConsole.WriteLine("");
+    await foreach (MemoryQueryResult memoryResult in memoryResults)
+    {
+        AnsiConsole.WriteLine(memoryResult.Metadata.Id);
+        AnsiConsole.WriteLine($"It is about; {memoryResult.Metadata.Description}");
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine("Relevance for your query is " + memoryResult.Relevance);
+        AnsiConsole.WriteLine();
+    }
+}
+
+async Task<ISemanticTextMemory> GenerateMemory(string memoryName)
+{
+    var textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+    //Build memory for Volatile local memory
+    var memoryWithCustomData = new MemoryBuilder()
+                .WithTextEmbeddingGeneration(textEmbeddingGenerationService)
+                .WithMemoryStore(new VolatileMemoryStore())
+                .Build();
+
+    //Store some mock data in memory
+    await StoreInMemoryAsync(memoryWithCustomData, memoryName, settings);
+
+    return memoryWithCustomData;
+}
 
 async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Settings settings)
 {
@@ -161,9 +193,9 @@ async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Set
         await memory.SaveReferenceAsync(
             collection: memoryName,
             externalSourceName: "LOCAL",
-            externalId: movie.MovieName,
-            description: movie.Description,
-            text: movie.Description);
+            externalId: movie.Title,
+            description: movie.Plot,
+            text: movie.Plot);
     }
 }
 

@@ -8,6 +8,11 @@ public sealed class Settings
 
 public sealed class Movie
 {
-    public required string MovieName { get; set; } = null!;
-    public required string Description { get; set; } = null!;
+    public required string Title { get; set; } = null!;
+    public required string Plot { get; set; } = null!;
+    public required int Year { get; set; }
+    public required string[] Writers{ get; set; } = [];
+    public required string[] Directors{ get; set; } = [];
+    public required string[] Genres{ get; set; } = [];
+    public required string[] Cast{ get; set; } = [];
 }

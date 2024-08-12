@@ -115,7 +115,10 @@ What do you want me to do?
 
         foreach (var movie in settings.Movies)
         {
-            var plotTexts = TextChunker.SplitPlainTextLines(movie.Plot, 100);
+            var plotTexts = TextChunker.SplitPlainTextParagraphs(
+                TextChunker.SplitPlainTextLines(movie.Plot, 30)
+                , 100);
+
             for (int i = 0; i < plotTexts.Count; i++)
             {
                 await memory.SaveInformationAsync(memoryName, plotTexts[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");

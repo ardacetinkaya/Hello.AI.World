@@ -5,17 +5,21 @@
 #pragma warning disable SKEXP0050
 #pragma warning disable SKEXP0052
 
+using System.Numerics.Tensors;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.AI.Embeddings;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Plugins.Memory;
+using Microsoft.SemanticKernel.Text;
 using Spectre.Console;
+
 
 //Some standard configuration
 IConfigurationRoot config = new ConfigurationBuilder()
@@ -28,6 +32,7 @@ Settings settings = config.Get<Settings>();
 
 //Build the Kernel
 var builder = Kernel.CreateBuilder();
+
 builder.AddOpenAIChatCompletion(
     modelId: settings.ModelId,
     endpoint: new Uri(settings.URI),
@@ -38,7 +43,9 @@ builder.AddLocalTextEmbeddingGeneration();
 Kernel kernel = builder.Build();
 ///////
 
+var memoryName = "BRAIN";
 var choice = "";
+
 while (choice.ToLower() != "quit")
 {
     choice = AnsiConsole.Prompt(
@@ -55,7 +62,10 @@ What do you want me to do?
             .PageSize(10)
             .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
             .AddChoices(new[] {
-                "Chat with me","Suggest me a movie", "Quit"
+                "Chat with me",
+                "Suggest me a movie",
+                "Suggest me a movie v2",
+                "Quit"
             }));
 
     if (choice == "Chat with me")
@@ -80,52 +90,50 @@ What do you want me to do?
             If you can not answer, feel free to say I don't know.
             """);
 
-        AnsiConsole.WriteLine($"I agree. Let's chat!");
-
-        await LoopAsync(async (question) =>
+        await LoopAsync($"I agree. Let's chat!", async (question) =>
             await ProcessChatAsync(question, chat, chatHistory, executionSettings));
     }
     else if (choice == "Suggest me a movie")
     {
-        var memoryName = "BRAIN";
-        var memoryWithCustomData = await GenerateMemory(memoryName);
+        var memory = await GenerateMemory(memoryName);
 
-        AnsiConsole.WriteLine($"Tell me more about what are you looking for?");
+        await LoopAsync($"Tell me more about what are you looking for?", async (question) =>
+            await ProcessMovieSuggestionAsync(question, memory, memoryName));
 
-        await LoopAsync(async (question) =>
-            await ProcessMovieSuggestionAsync(question, memoryWithCustomData, memoryName));
+    }
+    else if (choice == "Suggest me a movie v2")
+    {
+        var embeddingGenerator = kernel.Services.GetRequiredService<ITextEmbeddingGenerationService>();
+
+        ISemanticTextMemory memory = new MemoryBuilder()
+            .WithLoggerFactory(kernel.LoggerFactory)
+            .WithMemoryStore(new VolatileMemoryStore())
+            .WithTextEmbeddingGeneration(embeddingGenerator)
+            // .WithOpenAITextEmbeddingGeneration("text-embedding-3-small", settings.APIKey)
+            .Build();
+
+
+        foreach (var movie in settings.Movies)
         {
-            AnsiConsole.Markup("[underline green]You:[/] ");
-            AnsiConsole.WriteLine("");
-            var question = Console.ReadLine();
-            if (string.IsNullOrEmpty(question))
+            var plotTexts = TextChunker.SplitPlainTextLines(movie.Plot, 100);
+            for (int i = 0; i < plotTexts.Count; i++)
             {
-                break;
+                await memory.SaveInformationAsync(memoryName, plotTexts[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");
             }
-
-            //Search memory for given input
-            var memoryResults = memoryWithCustomData
-                                    .SearchAsync(memoryName, question, limit: 2, minRelevanceScore: 0.5);
-
-
-            AnsiConsole.Markup("[underline yellow]Me:[/] ");
-            AnsiConsole.WriteLine("");
-            await foreach (MemoryQueryResult memoryResult in memoryResults)
+            var genres = TextChunker.SplitPlainTextLines(String.Join(",", movie.Genres), 5);
+            for (int i = 0; i < genres.Count; i++)
             {
-                AnsiConsole.WriteLine(memoryResult.Metadata.Id);
-                AnsiConsole.WriteLine($"It is about; {memoryResult.Metadata.Description}");
-                AnsiConsole.WriteLine();
-                AnsiConsole.WriteLine("Relevance for your query is " + memoryResult.Relevance);
-                AnsiConsole.WriteLine();
+                await memory.SaveInformationAsync(memoryName, genres[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");
             }
-
-
         }
+
+        await LoopAsync($"Tell me more about what are you looking for?", async (question) =>
+            await ProcessMovieSuggestionAsync(question, memory, memoryName));
     }
 
 }
 
-async Task LoopAsync(Func<string, Task> processInput)
+async Task LoopAsync(string welcomeMessage, Func<string, Task> processInput)
 {
     while (true)
     {
@@ -164,7 +172,7 @@ async Task ProcessMovieSuggestionAsync(string question, ISemanticTextMemory memo
     await foreach (MemoryQueryResult memoryResult in memoryResults)
     {
         AnsiConsole.WriteLine(memoryResult.Metadata.Id);
-        AnsiConsole.WriteLine($"It is about; {memoryResult.Metadata.Description}");
+        AnsiConsole.WriteLine($"{memoryResult.Metadata.Description}");
         AnsiConsole.WriteLine();
         AnsiConsole.WriteLine("Relevance for your query is " + memoryResult.Relevance);
         AnsiConsole.WriteLine();
@@ -193,8 +201,8 @@ async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Set
         await memory.SaveReferenceAsync(
             collection: memoryName,
             externalSourceName: "LOCAL",
-            externalId: movie.Title,
-            description: movie.Plot,
+            externalId: $"Title: {movie.Title}",
+            description: $"Plot: {movie.Plot}",
             text: movie.Plot);
     }
 }

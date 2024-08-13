@@ -6,8 +6,10 @@
 #pragma warning disable SKEXP0052
 
 using System.Numerics.Tensors;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.SemanticKernel;
@@ -37,6 +39,9 @@ builder.AddOpenAIChatCompletion(
     modelId: settings.ModelId,
     endpoint: new Uri(settings.URI),
     apiKey: settings.APIKey);
+
+builder.Services.AddLogging(c => c.AddConsole()
+    .SetMinimumLevel(LogLevel.Trace));
 
 builder.AddLocalTextEmbeddingGeneration();
 
@@ -123,11 +128,6 @@ What do you want me to do?
             {
                 await memory.SaveInformationAsync(memoryName, plotTexts[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");
             }
-            var genres = TextChunker.SplitPlainTextLines(String.Join(",", movie.Genres), 5);
-            for (int i = 0; i < genres.Count; i++)
-            {
-                await memory.SaveInformationAsync(memoryName, genres[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");
-            }
         }
 
         await LoopAsync($"Tell me more about what are you looking for?", async (question) =>
@@ -138,10 +138,11 @@ What do you want me to do?
 
 async Task LoopAsync(string welcomeMessage, Func<string, Task> processInput)
 {
+    AnsiConsole.Markup($"[underline yellow]Me:[/] {welcomeMessage}");
+    AnsiConsole.WriteLine("");
     while (true)
     {
         AnsiConsole.Markup("[underline green]You:[/] ");
-        AnsiConsole.WriteLine("");
         var input = Console.ReadLine();
         if (string.IsNullOrEmpty(input))
         {
@@ -159,7 +160,6 @@ async Task ProcessChatAsync(string question, IChatCompletionService chat, ChatHi
     IReadOnlyList<ChatMessageContent> result = await chat.GetChatMessageContentsAsync(chatHistory, executionSettings: executionSettings);
 
     AnsiConsole.Markup("[underline yellow]Me:[/] ");
-    AnsiConsole.WriteLine("");
     AnsiConsole.WriteLine(result[^1].Content);
 
     chatHistory.Add(result[^1]);
@@ -171,9 +171,15 @@ async Task ProcessMovieSuggestionAsync(string question, ISemanticTextMemory memo
                             .SearchAsync(memoryName, question, limit: 2, minRelevanceScore: 0.5);
 
     AnsiConsole.Markup("[underline yellow]Me:[/] ");
-    AnsiConsole.WriteLine("");
+    if (!await memoryResults.AnyAsync())
+    {
+        AnsiConsole.Write("I don't know any...");
+        AnsiConsole.WriteLine("");
+    }
+    
     await foreach (MemoryQueryResult memoryResult in memoryResults)
     {
+        AnsiConsole.WriteLine("");
         AnsiConsole.WriteLine(memoryResult.Metadata.Id);
         AnsiConsole.WriteLine($"{memoryResult.Metadata.Description}");
         AnsiConsole.WriteLine();
@@ -201,11 +207,14 @@ async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Set
 {
     foreach (var movie in settings.Movies)
     {
+        var movieString = JsonSerializer.Serialize(movie);
+
         await memory.SaveReferenceAsync(
             collection: memoryName,
             externalSourceName: "LOCAL",
             externalId: $"Title: {movie.Title}",
             description: $"Plot: {movie.Plot}",
+            additionalMetadata: movieString,
             text: movie.Plot);
     }
 }

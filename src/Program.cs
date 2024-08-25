@@ -65,34 +65,38 @@ builder.Services.AddKeyedScoped<ISemanticTextMemory>("MongoDBMemoryStore", (memo
 
 Kernel kernel = builder.Build();
 ///////
-
-var memoryName = "BRAIN";
-var choice = "";
-ISemanticTextMemory memory = null;
-
-while (choice.ToLower() != "quit")
-{
-    choice = AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-            .Title(""""
+ 
+var selectionPrompt = new SelectionPrompt<Feature>()
+            .Title(@"
     __  __       __ __          ___     ____
    / / / /___   / // /____     /   |   /  _/
   / /_/ // _ \ / // // __ \   / /| |   / /  
  / __  //  __// // // /_/ /  / ___ | _/ /   
 /_/ /_/ \___//_//_/ \____/  /_/  |_|/___/   
                                             
-What do you want me to do?
-"""")
+            What do you want me to do?
+            ")
             .PageSize(10)
             .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-            .AddChoices(new[] {
-                "Chat with me",
-                "Suggest me a movie",
-                "Suggest me a movie v2",
-                "Quit"
-            }));
+            .AddChoices<Feature>(new[] {
+                new Feature("Chat with me", 0),
+                new Feature("Suggest me a movie (w/VolatileMemoryStore)", 1),
+                new Feature("Suggest me a movie (w/MongoDBMemoryStore)", 2),
+                new Feature("Quit", -1)
+            });
 
-    if (choice == "Chat with me")
+var memoryName = "BRAIN";
+Feature choice = null;
+ISemanticTextMemory memory = null;
+
+while (true)
+{
+    choice = AnsiConsole.Prompt(selectionPrompt);
+
+    if(choice.Value==-1){
+        break;
+    }
+    else if (choice.Value == 0)
     {
         var chat = kernel.GetRequiredService<IChatCompletionService>();
 
@@ -110,15 +114,12 @@ What do you want me to do?
 
         };
         //Define a system user prompt so that chat system can behave according to given prompt
-        var chatHistory = new ChatHistory("""
-            You are a friendly assistant. You will answer given questions. Answer them in short form, not long sentences.
-            If you can not answer, feel free to say I don't know.
-            """);
+        var chatHistory = new ChatHistory("You are a friendly assistant. You will answer given questions. Answer them in short form, not long sentences.If you can not answer, feel free to say I don't know.");
 
         await LoopAsync($"I agree. Let's chat!", async (question) =>
             await ProcessChatAsync(question, chat, chatHistory, executionSettings));
     }
-    else if (choice == "Suggest me a movie")
+    else if (choice.Value == 1)
     {
         //Generates a volatile memory and fill it with some data
         memory = await GenerateVolatileMemory(memoryName);
@@ -127,7 +128,7 @@ What do you want me to do?
             await ProcessMovieSuggestionWithSemanticSearchAsync(question, memory, memoryName));
 
     }
-    else if (choice == "Suggest me a movie v2")
+    else if (choice.Value == 2)
     {
         //Generates a persistent memory as MongoDB data store and fill it with some data
         memory = await GenerateMongoDBMemory(memoryName);
@@ -180,7 +181,7 @@ async Task ProcessMovieSuggestionWithSemanticSearchAsync(string question, ISeman
         AnsiConsole.Write("I don't know any...");
         AnsiConsole.WriteLine("");
     }
-    
+
     await foreach (MemoryQueryResult memoryResult in memoryResults)
     {
         AnsiConsole.WriteLine("");
@@ -262,4 +263,11 @@ Year: {movie.Year}",
     }
 
     return memory;
+}
+
+record Feature(string DisplayName, int Value){
+    public override string ToString()
+    {
+        return DisplayName;
+    }
 }

@@ -1,9 +1,8 @@
 #pragma warning disable SKEXP0001
-#pragma warning disable SKEXP0003
 #pragma warning disable SKEXP0010
-#pragma warning disable SKEXP0011
 #pragma warning disable SKEXP0050
-#pragma warning disable SKEXP0052
+#pragma warning disable SKEXP0020
+
 
 using System.Numerics.Tensors;
 using System.Text.Json;
@@ -15,6 +14,7 @@ using Microsoft.KernelMemory.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.AI.Embeddings;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.MongoDB;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -44,12 +44,31 @@ builder.Services.AddLogging(c => c.AddConsole()
     .SetMinimumLevel(LogLevel.Trace));
 
 builder.AddLocalTextEmbeddingGeneration();
+builder.Services.AddKeyedScoped<ISemanticTextMemory>("VolatileMemoryStore", (memory, key) =>
+{
+    var embeddingGenerator = memory.GetRequiredService<ITextEmbeddingGenerationService>();
+    return new MemoryBuilder()
+               .WithTextEmbeddingGeneration(embeddingGenerator)
+               .WithMemoryStore(new VolatileMemoryStore())
+               .Build();
+});
+
+builder.Services.AddKeyedScoped<ISemanticTextMemory>("MongoDBMemoryStore", (memory, key) =>
+{
+    var embeddingGenerator = memory.GetRequiredService<ITextEmbeddingGenerationService>();
+    return new MemoryBuilder()
+            .WithTextEmbeddingGeneration(embeddingGenerator)
+            .WithMemoryStore(new MongoDBMemoryStore(settings.MongoDBConnectionString, "Movies", "embedding"))
+            .Build();
+});
+
 
 Kernel kernel = builder.Build();
 ///////
 
 var memoryName = "BRAIN";
 var choice = "";
+ISemanticTextMemory memory = null;
 
 while (choice.ToLower() != "quit")
 {
@@ -86,7 +105,8 @@ What do you want me to do?
             //Limit the maximum output tokens for the model response.
             MaxTokens = 1024,
             // Controls text diversity by selecting the most probable words until a set probability is reached.
-            TopP = 1
+            TopP = 1,
+            ModelId = settings.ModelId
 
         };
         //Define a system user prompt so that chat system can behave according to given prompt
@@ -100,43 +120,27 @@ What do you want me to do?
     }
     else if (choice == "Suggest me a movie")
     {
-        var memory = await GenerateMemory(memoryName);
+        //Generates a volatile memory and fill it with some data
+        memory = await GenerateVolatileMemory(memoryName);
 
         await LoopAsync($"Tell me more about what are you looking for?", async (question) =>
-            await ProcessMovieSuggestionAsync(question, memory, memoryName));
+            await ProcessMovieSuggestionWithSemanticSearchAsync(question, memory, memoryName));
 
     }
     else if (choice == "Suggest me a movie v2")
     {
-        var embeddingGenerator = kernel.Services.GetRequiredService<ITextEmbeddingGenerationService>();
-
-        ISemanticTextMemory memory = new MemoryBuilder()
-            .WithLoggerFactory(kernel.LoggerFactory)
-            .WithMemoryStore(new VolatileMemoryStore())
-            .WithTextEmbeddingGeneration(embeddingGenerator)
-            // .WithOpenAITextEmbeddingGeneration("text-embedding-3-small", settings.APIKey)
-            .Build();
-
-
-        foreach (var movie in settings.Movies)
-        {
-            var plotTexts = TextChunker.SplitPlainTextParagraphs(
-                TextChunker.SplitPlainTextLines(movie.Plot, 30)
-                , 100);
-
-            for (int i = 0; i < plotTexts.Count; i++)
-            {
-                await memory.SaveInformationAsync(memoryName, plotTexts[i], $"Title: {movie.Title}", $"Plot: {movie.Plot}");
-            }
-        }
+        //Generates a persistent memory as MongoDB data store and fill it with some data
+        memory = await GenerateMongoDBMemory(memoryName);
 
         await LoopAsync($"Tell me more about what are you looking for?", async (question) =>
-            await ProcessMovieSuggestionAsync(question, memory, memoryName));
+        {
+            await ProcessMovieSuggestionWithEmbeddedSearchAsync(question, memory, memoryName);
+        });
     }
 
 }
 
-async Task LoopAsync(string welcomeMessage, Func<string, Task> processInput)
+async Task LoopAsync(string welcomeMessage, Func<string, Task> process)
 {
     AnsiConsole.Markup($"[underline yellow]Me:[/] {welcomeMessage}");
     AnsiConsole.WriteLine("");
@@ -149,7 +153,7 @@ async Task LoopAsync(string welcomeMessage, Func<string, Task> processInput)
             break;
         }
 
-        await processInput(input);
+        await process(input);
     }
 }
 
@@ -165,7 +169,7 @@ async Task ProcessChatAsync(string question, IChatCompletionService chat, ChatHi
     chatHistory.Add(result[^1]);
 }
 
-async Task ProcessMovieSuggestionAsync(string question, ISemanticTextMemory memoryWithCustomData, string memoryName)
+async Task ProcessMovieSuggestionWithSemanticSearchAsync(string question, ISemanticTextMemory memoryWithCustomData, string memoryName)
 {
     var memoryResults = memoryWithCustomData
                             .SearchAsync(memoryName, question, limit: 2, minRelevanceScore: 0.5);
@@ -188,23 +192,38 @@ async Task ProcessMovieSuggestionAsync(string question, ISemanticTextMemory memo
     }
 }
 
-async Task<ISemanticTextMemory> GenerateMemory(string memoryName)
+async Task ProcessMovieSuggestionWithEmbeddedSearchAsync(string question, ISemanticTextMemory memoryWithCustomData, string memoryName)
 {
-    var textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
-    //Build memory for Volatile local memory
-    var memoryWithCustomData = new MemoryBuilder()
-                .WithTextEmbeddingGeneration(textEmbeddingGenerationService)
-                .WithMemoryStore(new VolatileMemoryStore())
-                .Build();
+    var memoryResults = memoryWithCustomData
+                            .SearchAsync(memoryName, question
+                                , limit: 2
+                                , minRelevanceScore: 0.6
+                                , withEmbeddings: true
+                                , kernel);
 
-    //Store some mock data in memory
-    await StoreInMemoryAsync(memoryWithCustomData, memoryName, settings);
 
-    return memoryWithCustomData;
+    AnsiConsole.Markup("[underline yellow]Me:[/] ");
+    if (!await memoryResults.AnyAsync())
+    {
+        AnsiConsole.Write("I don't know any...");
+        AnsiConsole.WriteLine("");
+    }
+
+    await foreach (MemoryQueryResult memoryResult in memoryResults.OrderByDescending(o => o.Relevance))
+    {
+        AnsiConsole.WriteLine("");
+        AnsiConsole.WriteLine(memoryResult.Metadata.Id);
+        AnsiConsole.WriteLine($"{memoryResult.Metadata.Description}");
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine("Relevance for your query is " + memoryResult.Relevance);
+        AnsiConsole.WriteLine();
+    }
 }
 
-async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Settings settings)
+async Task<ISemanticTextMemory> GenerateVolatileMemory(string memoryName)
 {
+    var memory = kernel.Services.GetRequiredKeyedService<ISemanticTextMemory>("VolatileMemoryStore");
+
     foreach (var movie in settings.Movies)
     {
         var movieString = JsonSerializer.Serialize(movie);
@@ -212,10 +231,35 @@ async Task StoreInMemoryAsync(ISemanticTextMemory memory, string memoryName, Set
         await memory.SaveReferenceAsync(
             collection: memoryName,
             externalSourceName: "LOCAL",
-            externalId: $"Title: {movie.Title}",
-            description: $"Plot: {movie.Plot}",
+            externalId: $"{movie.Title}",
+            description: $"{movie.Plot}",
             additionalMetadata: movieString,
             text: movie.Plot);
     }
+
+    return memory;
 }
 
+async Task<ISemanticTextMemory> GenerateMongoDBMemory(string memoryName)
+{
+    var memory = kernel.Services.GetRequiredKeyedService<ISemanticTextMemory>("MongoDBMemoryStore");
+
+    //Save all data into the memory
+    foreach (var movie in settings.Movies)
+    {
+        await memory.SaveReferenceAsync(
+            collection: memoryName,
+            text: $@"Plot: {movie.Plot}
+Genres: {string.Join(",", movie.Genres)}
+Directors: {string.Join(",", movie.Directors)}
+Cast: {string.Join(",", movie.Cast)}
+Year: {movie.Year}",
+            externalId: $"{movie.Title}",
+            externalSourceName: $"EXTERNAL_DATA",
+            description: $"{movie.Plot}",
+            additionalMetadata: string.Empty,
+            kernel: kernel);
+    }
+
+    return memory;
+}

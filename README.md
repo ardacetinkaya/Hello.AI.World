@@ -7,8 +7,8 @@ Mainly it is a very simple console application that you can have
 - [x] Make some chat with given AI model
      - Asking some questions and getting some relevant answers
 - [x] Suggesting some local custom data within Memory
-- [ ] Text chunck
-- [ ] Vector store and search from there
+- [x] Vector store(w/ MongoDB) and search from there
+- [ ] Text chunck and embeding and store in MongoDB(without Connectors)
 - [ ] Plugins
 
 It can be run locally with Ollama for some LLM. There is also "devcontainer.json" file to have required images.

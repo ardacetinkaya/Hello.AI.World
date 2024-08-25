@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            
+        }
+    },
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Hello.AI.World.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+    ]
+}

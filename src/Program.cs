@@ -4,22 +4,16 @@
 #pragma warning disable SKEXP0020
 
 
-using System.Numerics.Tensors;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.KernelMemory;
-using Microsoft.KernelMemory.AI;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.AI.Embeddings;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.MongoDB;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
-using Microsoft.SemanticKernel.Plugins.Memory;
-using Microsoft.SemanticKernel.Text;
 using Spectre.Console;
 
 
@@ -38,7 +32,8 @@ var builder = Kernel.CreateBuilder();
 builder.AddOpenAIChatCompletion(
     modelId: settings.ModelId,
     endpoint: new Uri(settings.URI),
-    apiKey: settings.APIKey);
+    apiKey: settings.APIKey,
+    serviceId: "OpenAIChat");
 
 builder.Services.AddLogging(c => c.AddConsole()
     .SetMinimumLevel(LogLevel.Trace));
@@ -106,11 +101,11 @@ while (true)
             ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
             // Controls randomness in the response, use lower to be more deterministic.
             Temperature = 0.7,
-            //Limit the maximum output tokens for the model response.
-            MaxTokens = 1024,
+        
             // Controls text diversity by selecting the most probable words until a set probability is reached.
             TopP = 1,
-            ModelId = settings.ModelId
+            ModelId = settings.ModelId,
+            ServiceId = "openai"
 
         };
         //Define a system user prompt so that chat system can behave according to given prompt

@@ -8,8 +8,10 @@ Mainly it is a very simple console application that you can have
      - Asking some questions and getting some relevant answers
 - [x] Suggesting some local custom data within Memory
 - [x] Vector store(w/ MongoDB) and search from there
-- [ ] Text chunck and embeding and store in MongoDB(without Connectors)
+- [x] Text chunck and embeding and store in MongoDB(without Connectors)
 - [ ] Plugins
+- [ ] Microsoft.Extensions.AI
+
 
 It can be run locally with Ollama for some LLM. There is also "devcontainer.json" file to have required images.
 

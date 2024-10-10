@@ -10,7 +10,7 @@ Mainly it is a very simple console application that you can have
 - [x] Vector store(w/ MongoDB) and search from there
 - [x] Text chunck and embeding and store in MongoDB(without Connectors)
 - [ ] Plugins
-- [ ] Microsoft.Extensions.AI
+- [x] Microsoft.Extensions.AI
 
 
 It can be run locally with Ollama for some LLM. There is also "devcontainer.json" file to have required images.
@@ -26,8 +26,10 @@ I will try to update this repository to learn and play more. And please feel fre
 
 ![What](/img03.png)
 
-Some great resources to learn more about .NET Semantic Kernel APIs
+Some great resources to learn more
 
 - https://learn.microsoft.com/en-us/semantic-kernel/overview/
 - https://github.com/microsoft/semantic-kernel
 - https://devblogs.microsoft.com/dotnet/demystifying-retrieval-augmented-generation-with-dotnet/
+- https://devblogs.microsoft.com/dotnet/introducing-microsoft-extensions-ai-preview/
+- https://github.com/dotnet/eShopSupport/tree/main

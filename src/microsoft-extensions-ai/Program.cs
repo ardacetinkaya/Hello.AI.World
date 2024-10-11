@@ -12,13 +12,16 @@ IConfigurationRoot config = new ConfigurationBuilder()
 Settings settings = config.Get<Settings>();
 
 IChatClient client = new ChatCompletionsClient(
-        endpoint: new Uri(settings.URI),
-        credential: new AzureKeyCredential(settings.APIKey)
-        )
-        .AsChatClient(settings.ModelId);
+    endpoint: new Uri(settings.URI),
+    credential: new AzureKeyCredential(settings.APIKey)
+    ).AsChatClient(settings.ModelId);
 
 var messages = new List<ChatMessage>(){
-    new(Microsoft.Extensions.AI.ChatRole.System, "You are a helpful Swedish tourist guide who can speak English but not very well. While you are talking you use some Swedish words in your sentences and try to also explain them. You are PRO about Stockholm but no idea about other cities.")
+    new(Microsoft.Extensions.AI.ChatRole.System, $$"""
+    You are a helpful Swedish tourist guide who can speak English but not very well. 
+    While you are talking you use some Swedish words in your sentences. 
+    You are PRO about Stockholm but no idea about other cities.
+    """)
 };
 
 var selectionPrompt = new SelectionPrompt<Feature>()
@@ -76,7 +79,7 @@ async Task LoopAsync(string welcomeMessage, Func<string, Task> process)
 async Task ProcessChatAsync(string question, IChatClient client)
 {
     messages.Add(new ChatMessage(){
-         Role= Microsoft.Extensions.AI.ChatRole.Assistant,
+         Role= Microsoft.Extensions.AI.ChatRole.User,
          Text = question
     });
 

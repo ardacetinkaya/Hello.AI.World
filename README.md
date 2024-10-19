@@ -19,9 +19,6 @@ There is also new GitHub Marketplace for models(Preview) - https://github.com/ma
 
 I will try to update this repository to learn and play more. And please feel free to share any feedback or help me out to figure out those, I will really appreciate...
 
-
-![What](/img01.png)
-
 ![What](/img02.png)
 
 ![What](/img03.png)

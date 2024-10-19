@@ -25,19 +25,11 @@ var messages = new List<ChatMessage>(){
 };
 
 var selectionPrompt = new SelectionPrompt<Feature>()
-            .Title(@"
-    __  __       __ __          ___     ____
-   / / / /___   / // /____     /   |   /  _/
-  / /_/ // _ \ / // // __ \   / /| |   / /  
- / __  //  __// // // /_/ /  / ___ | _/ /   
-/_/ /_/ \___//_//_/ \____/  /_/  |_|/___/   
-                                            
-            What do you want me to do?
-            ")
+            .Title(@"What do you want me to do?s")
             .PageSize(10)
             .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
             .AddChoices<Feature>(new[] {
-                new Feature("Chat with me", 0),
+                new Feature("Chat with me as a tourist guide", 0),
                 new Feature("Quit", -1)
             });
 

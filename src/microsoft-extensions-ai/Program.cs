@@ -206,7 +206,7 @@ async Task GenerateEmbeddings([NotNull] string fileName = "embeddeddata.json")
 
         foreach (var item in data.Records)
         {
-            serializedData.Add(JsonSerializer.Serialize(item));
+            serializedData.Add(item.ToString());
         }
 
         var generator = host.Services.GetService<IEmbeddingGenerator<string, Embedding<float>>>();

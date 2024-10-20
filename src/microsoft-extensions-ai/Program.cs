@@ -15,8 +15,8 @@ using Spectre.Console;
 #pragma warning disable SKEXP0050
 
 IConfigurationRoot config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddJsonFile("data.json")
+    .AddJsonFile("appsettings.json") //For some standard application settings
+    .AddJsonFile("data.json") //Some custom data
     .Build();
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -24,13 +24,25 @@ var builder = Host.CreateApplicationBuilder(args);
 Settings settings = config.Get<Settings>();
 Data<Movie> data = config.Get<Data<Movie>>();
 
-//ChatClient is defined with Microsoft.Extensions.AI APIs
+//Adding ChatClient service according the setting value.
 builder.Services.AddChatClient(c =>
 {
-    IChatClient client = new ChatCompletionsClient(
-        endpoint: new Uri(settings.URI),
-        credential: new AzureKeyCredential(settings.APIKey))
-    .AsChatClient(settings.ModelId);
+    IChatClient client = null;
+    switch (settings.Provider)
+    {
+        case Provider.GitHubModels:
+        case Provider.AzureAIModels:
+            client = new ChatCompletionsClient(
+                    endpoint: new Uri(settings.URI),
+                    credential: new AzureKeyCredential(settings.APIKey))
+                .AsChatClient(settings.ModelId);
+            break;
+        case Provider.OpenAI:
+            client = new OpenAI.OpenAIClient(
+                    credential: new ApiKeyCredential(settings.APIKey))
+                .AsChatClient(modelId: "gpt-4o-mini");
+            break;
+    }
 
     return new ChatClientBuilder().Use(client);
 });
@@ -68,10 +80,14 @@ builder.Services.AddKeyedScoped<ISemanticTextMemory>("VolatileMemoryStore", (mem
 
 var host = builder.Build();
 
-//Generating the embedings for existing data
+//Generating the embeddings for existing data
+//Mainly "embeddings" is the mathematical representation of data.
+//Within that representation, it is possible to capture properties
+//and it provides a way of relationship with other data
 await GenerateEmbeddings();
 
-//Generating the memory with embedded data
+//Generating the memory with embeddings data.
+//So that data can be preserved and can be queried
 await GenerateMemory();
 
 

@@ -67,6 +67,7 @@ builder.Services.AddKeyedScoped<ISemanticTextMemory>("VolatileMemoryStore", (mem
 });
 
 var host = builder.Build();
+
 //Generating the embedings for existing data
 await GenerateEmbeddings();
 

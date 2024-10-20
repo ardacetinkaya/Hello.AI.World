@@ -24,7 +24,7 @@ var builder = Host.CreateApplicationBuilder(args);
 Settings settings = config.Get<Settings>();
 Data<Movie> data = config.Get<Data<Movie>>();
 
-//Adding ChatClient service according the setting value.
+// Registers a chat client service for dependency injection, configuring it based on the selected provider.
 builder.Services.AddChatClient(c =>
 {
     IChatClient client = null;
@@ -47,7 +47,8 @@ builder.Services.AddChatClient(c =>
     return new ChatClientBuilder().Use(client);
 });
 
-//EmbeddingGenerator is defined
+// Registers an embedding generator service for transforming strings into embeddings (numerical representations).
+// Specifying the model ID "text-embedding-3-small"(though other embedding-supported models can also be used if desired).
 builder.Services.AddEmbeddingGenerator<string, Embedding<float>>(e =>
 {
     IEmbeddingGenerator<string, Embedding<float>> generator = new AzureOpenAIClient(
@@ -58,14 +59,16 @@ builder.Services.AddEmbeddingGenerator<string, Embedding<float>>(e =>
     return new EmbeddingGeneratorBuilder<string, Embedding<float>>().Use(generator);
 });
 
-//MemortStore is defined
-//Some other MemoryStore's also can be used. There are some API provided stores like MongoDBMemoryStore
-//Or any custom, owned developed stores can be implemented
+
+// Registers a scoped service for IMemoryStore, using a VolatileMemoryStore implementation.
+// VolatileMemoryStore is typically used for in-memory storage that does not persist beyond the lifetime of the application.
+// There are some other API provided stores like MongoDBMemoryStore, Redis...
 builder.Services.AddScoped<IMemoryStore>(m => new VolatileMemoryStore());
 
-//Defining ISemanticTextMemory with CustomTextEmbeddingGenerator
-//So if some data will be in the memory, their embeddings will be generated with this generator
-//And also ISemanticTextMemory is defined to have recently defined MemoryStore
+// Registers a scoped service for ISemanticTextMemory with a specific key ("TextMemory").
+// This allows for dependency injection of a semantic text memory component in the application.
+// It retrieves an IEmbeddingGenerator service for generating text embeddings and uses it to create
+// a custom text embedding generator (CustomTextEmbeddingGenerator).
 builder.Services.AddKeyedScoped<ISemanticTextMemory>("TextMemory", (memory, key) =>
 {
     var textEmbeddingGenerator = memory.GetService<IEmbeddingGenerator<string, Embedding<float>>>();
@@ -80,14 +83,8 @@ builder.Services.AddKeyedScoped<ISemanticTextMemory>("TextMemory", (memory, key)
 
 var host = builder.Build();
 
-//Generating the embeddings for existing data
-//Mainly "embeddings" is the mathematical representation of data.
-//Within that representation, it is possible to capture properties
-//and it provides a way of relationship with other data
 await GenerateEmbeddings();
 
-//Generating the memory with embeddings data.
-//So that data can be preserved and can be queried
 await GenerateMemory();
 
 
@@ -275,14 +272,4 @@ async Task<List<ChatMessage>> SearchInMemory(string question, [NotNull] string m
     }
 
     return messages;
-}
-
-
-
-record Feature(string DisplayName, int Value)
-{
-    public override string ToString()
-    {
-        return DisplayName;
-    }
 }

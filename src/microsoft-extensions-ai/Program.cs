@@ -40,7 +40,7 @@ builder.Services.AddChatClient(c =>
         case Provider.OpenAI:
             client = new OpenAI.OpenAIClient(
                     credential: new ApiKeyCredential(settings.APIKey))
-                .AsChatClient(modelId: "gpt-4o-mini");
+                .AsChatClient(modelId: settings.ModelId);
             break;
     }
 
@@ -66,7 +66,7 @@ builder.Services.AddScoped<IMemoryStore>(m => new VolatileMemoryStore());
 //Defining ISemanticTextMemory with CustomTextEmbeddingGenerator
 //So if some data will be in the memory, their embeddings will be generated with this generator
 //And also ISemanticTextMemory is defined to have recently defined MemoryStore
-builder.Services.AddKeyedScoped<ISemanticTextMemory>("VolatileMemoryStore", (memory, key) =>
+builder.Services.AddKeyedScoped<ISemanticTextMemory>("TextMemory", (memory, key) =>
 {
     var textEmbeddingGenerator = memory.GetService<IEmbeddingGenerator<string, Embedding<float>>>();
     return new MemoryBuilder()
@@ -255,7 +255,7 @@ async Task<List<ChatMessage>> SearchInMemory(string question, [NotNull] string m
     var messages = new List<ChatMessage>();
     if (!string.IsNullOrEmpty(question))
     {
-        var memory = host.Services.GetKeyedService<ISemanticTextMemory>("VolatileMemoryStore");
+        var memory = host.Services.GetKeyedService<ISemanticTextMemory>("TextMemory");
 
         var searchResult = memory.SearchAsync(memoryName, question, 4, 0.4, true);
         await foreach (MemoryQueryResult memoryResult in searchResult)

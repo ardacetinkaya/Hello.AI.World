@@ -1,0 +1,592 @@
+{
+    "Records": [
+        {
+            "Title": "The Shawshank Redemption",
+            "Plot": "Wrongfully convicted of murder, Andy Dufresne is sentenced to life in Shawshank Prison. Over two decades, he forms a powerful friendship with Red, earns the respect of the guards, and secretly plots his escape, all while revealing the harsh realities of prison life and the human spirit's resilience.",
+            "Category": "Movie",
+            "Directors": [
+                "Frank Darabont"
+            ],
+            "Year": "1994",
+            "Writers": [
+                "Stephen King",
+                "Frank Darabont"
+            ],
+            "Genres": [
+                "Drama"
+            ],
+            "Cast": [
+                "Tim Robbins",
+                "Morgan Freeman",
+                "Bob Gunton",
+                "William Sadler"
+            ]
+        },
+        {
+            "Title": "The Godfather",
+            "Plot": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son, Michael. As Michael reluctantly becomes involved in the family's criminal enterprises, he transforms into a ruthless leader, navigating power struggles, betrayal, and the burdens of his family's legacy.",
+            "Category": "Movie",
+            "Directors": [
+                "Francis Ford Coppola"
+            ],
+            "Year": "1972",
+            "Writers": [
+                "Mario Puzo",
+                "Francis Ford Coppola"
+            ],
+            "Genres": [
+                "Crime",
+                "Drama"
+            ],
+            "Cast": [
+                "Marlon Brando",
+                "Al Pacino",
+                "James Caan",
+                "Diane Keaton"
+            ]
+        },
+        {
+            "Title": "The Dark Knight",
+            "Plot": "Batman faces his greatest psychological and physical challenge when the Joker, a chaotic and ruthless criminal, plunges Gotham City into anarchy. The Joker's aim to push Batman to his moral limits forces Bruce Wayne to question his mission and his identity, leading to devastating consequences.",
+            "Category": "Movie",
+            "Directors": [
+                "Christopher Nolan"
+            ],
+            "Year": "2008",
+            "Writers": [
+                "Jonathan Nolan",
+                "Christopher Nolan",
+                "David S. Goyer"
+            ],
+            "Genres": [
+                "Action",
+                "Crime",
+                "Drama"
+            ],
+            "Cast": [
+                "Christian Bale",
+                "Heath Ledger",
+                "Aaron Eckhart",
+                "Michael Caine"
+            ]
+        },
+        {
+            "Title": "Pulp Fiction",
+            "Plot": "A blend of interconnected stories featuring criminals, hitmen, and a mysterious briefcase, told in a nonlinear fashion. From a hitman's philosophical musings to a boxer's escape from a crime boss, the film explores themes of redemption, fate, and the unexpected turns of life, all with dark humor.",
+            "Category": "Movie",
+            "Directors": [
+                "Quentin Tarantino"
+            ],
+            "Year": "1994",
+            "Writers": [
+                "Quentin Tarantino",
+                "Roger Avary"
+            ],
+            "Genres": [
+                "Crime",
+                "Drama"
+            ],
+            "Cast": [
+                "John Travolta",
+                "Uma Thurman",
+                "Samuel L. Jackson",
+                "Bruce Willis"
+            ]
+        },
+        {
+            "Title": "Schindler's List",
+            "Plot": "Oskar Schindler, a German industrialist and member of the Nazi party, transforms from a profiteer to a humanitarian as he saves over a thousand Polish Jews during the Holocaust. Through his factory, Schindler shields his Jewish workers from the atrocities of the concentration camps.",
+            "Category": "Movie",
+            "Directors": [
+                "Steven Spielberg"
+            ],
+            "Year": "1993",
+            "Writers": [
+                "Thomas Keneally",
+                "Steven Zaillian"
+            ],
+            "Genres": [
+                "Biography",
+                "Drama",
+                "History"
+            ],
+            "Cast": [
+                "Liam Neeson",
+                "Ralph Fiennes",
+                "Ben Kingsley",
+                "Caroline Goodall"
+            ]
+        },
+        {
+            "Title": "The Lord of the Rings: The Return of the King",
+            "Plot": "The final battle for Middle-earth begins as Frodo and Sam, guided by Gollum, reach Mordor to destroy the One Ring. Meanwhile, Aragorn leads the forces of good against Sauron's army, culminating in an epic showdown that will determine the fate of the world.",
+            "Category": "Movie",
+            "Directors": [
+                "Peter Jackson"
+            ],
+            "Year": "2003",
+            "Writers": [
+                "J.R.R. Tolkien",
+                "Fran Walsh",
+                "Philippa Boyens",
+                "Peter Jackson"
+            ],
+            "Genres": [
+                "Action",
+                "Adventure",
+                "Drama"
+            ],
+            "Cast": [
+                "Elijah Wood",
+                "Viggo Mortensen",
+                "Ian McKellen",
+                "Orlando Bloom"
+            ]
+        },
+        {
+            "Title": "Fight Club",
+            "Plot": "An insomniac office worker forms an underground fight club with a soap salesman, which evolves into a revolutionary movement. As the fight club grows, the lines between reality and madness blur, leading to a shocking revelation about the protagonist's true identity.",
+            "Category": "Movie",
+            "Directors": [
+                "David Fincher"
+            ],
+            "Year": "1999",
+            "Writers": [
+                "Chuck Palahniuk",
+                "Jim Uhls"
+            ],
+            "Genres": [
+                "Drama"
+            ],
+            "Cast": [
+                "Brad Pitt",
+                "Edward Norton",
+                "Helena Bonham Carter",
+                "Meat Loaf"
+            ]
+        },
+        {
+            "Title": "Forrest Gump",
+            "Plot": "Forrest Gump, a man with a low IQ but a kind heart, inadvertently influences several major historical events in the 20th century. From Vietnam to the White House, Forrest's simple outlook on life and love touches everyone he meets, as he pursues his lifelong love, Jenny.",
+            "Category": "Movie",
+            "Directors": [
+                "Robert Zemeckis"
+            ],
+            "Year": "1994",
+            "Writers": [
+                "Winston Groom",
+                "Eric Roth"
+            ],
+            "Genres": [
+                "Drama",
+                "Romance"
+            ],
+            "Cast": [
+                "Tom Hanks",
+                "Robin Wright",
+                "Gary Sinise",
+                "Sally Field"
+            ]
+        },
+        {
+            "Title": "Inception",
+            "Plot": "A skilled thief, Dom Cobb, who steals secrets from within the subconscious through shared dreams, is offered a chance to have his criminal history erased if he can successfully perform an 'inception': planting an idea in someone's mind without them knowing. As Cobb assembles his team, the mission becomes increasingly perilous.",
+            "Category": "Movie",
+            "Directors": [
+                "Christopher Nolan"
+            ],
+            "Year": "2010",
+            "Writers": [
+                "Christopher Nolan"
+            ],
+            "Genres": [
+                "Action",
+                "Adventure",
+                "Sci-Fi"
+            ],
+            "Cast": [
+                "Leonardo DiCaprio",
+                "Joseph Gordon-Levitt",
+                "Ellen Page",
+                "Tom Hardy"
+            ]
+        },
+        {
+            "Title": "The Matrix",
+            "Plot": "Computer hacker Neo discovers that the world he lives in is a simulated reality created by sentient machines that use humans as an energy source. Joining a group of rebels led by Morpheus, Neo embarks on a quest to free humanity and fulfill his destiny as 'The One.'",
+            "Category": "Movie",
+            "Directors": [
+                "Lana Wachowski",
+                "Lilly Wachowski"
+            ],
+            "Year": "1999",
+            "Writers": [
+                "Lana Wachowski",
+                "Lilly Wachowski"
+            ],
+            "Genres": [
+                "Action",
+                "Sci-Fi"
+            ],
+            "Cast": [
+                "Keanu Reeves",
+                "Laurence Fishburne",
+                "Carrie-Anne Moss",
+                "Hugo Weaving"
+            ]
+        },
+        {
+            "Title": "Goodfellas",
+            "Plot": "Based on the true story of Henry Hill, a young man who rises through the ranks of the mob, Goodfellas explores his life of crime, from his youthful fascination with the gangster lifestyle to the eventual betrayals and violence that come with it. The film depicts the allure and perils of organized crime with raw realism.",
+            "Category": "Movie",
+            "Directors": [
+                "Martin Scorsese"
+            ],
+            "Year": "1990",
+            "Writers": [
+                "Nicholas Pileggi",
+                "Martin Scorsese"
+            ],
+            "Genres": [
+                "Crime",
+                "Drama"
+            ],
+            "Cast": [
+                "Ray Liotta",
+                "Robert De Niro",
+                "Joe Pesci",
+                "Lorraine Bracco"
+            ]
+        },
+        {
+            "Title": "The Godfather: Part II",
+            "Plot": "Continuing the saga of the Corleone family, this sequel juxtaposes the rise of young Vito Corleone from his humble beginnings to becoming a powerful crime lord, with the struggles of his son Michael as he consolidates power while facing betrayal and moral dilemmas.",
+            "Category": "Movie",
+            "Directors": [
+                "Francis Ford Coppola"
+            ],
+            "Year": "1974",
+            "Writers": [
+                "Mario Puzo",
+                "Francis Ford Coppola"
+            ],
+            "Genres": [
+                "Crime",
+                "Drama"
+            ],
+            "Cast": [
+                "Al Pacino",
+                "Robert De Niro",
+                "Diane Keaton",
+                "Robert Duvall"
+            ]
+        },
+        {
+            "Title": "Gladiator",
+            "Plot": "Maximus, a betrayed Roman general, rises through the ranks as a gladiator to avenge the murders of his family and Emperor. As he fights in the Colosseum, Maximus becomes a symbol of resistance against the corrupt emperor, Commodus, culminating in a final, fateful showdown.",
+            "Category": "Movie",
+            "Directors": [
+                "Ridley Scott"
+            ],
+            "Year": "2000",
+            "Writers": [
+                "David Franzoni",
+                "John Logan",
+                "William Nicholson"
+            ],
+            "Genres": [
+                "Action",
+                "Adventure",
+                "Drama"
+            ],
+            "Cast": [
+                "Russell Crowe",
+                "Joaquin Phoenix",
+                "Connie Nielsen",
+                "Oliver Reed"
+            ]
+        },
+        {
+            "Title": "The Lion King",
+            "Plot": "Young lion prince Simba is destined to succeed his father, Mufasa, as king of the Pride Lands. After Mufasa's tragic death, Simba is manipulated into exile by his uncle Scar. With the help of new friends, Simba returns as an adult to reclaim his throne and fulfill his destiny.",
+            "Category": "Movie",
+            "Directors": [
+                "Roger Allers",
+                "Rob Minkoff"
+            ],
+            "Year": "1994",
+            "Writers": [
+                "Irene Mecchi",
+                "Jonathan Roberts",
+                "Linda Woolverton"
+            ],
+            "Genres": [
+                "Animation",
+                "Adventure",
+                "Drama"
+            ],
+            "Cast": [
+                "Matthew Broderick",
+                "Jeremy Irons",
+                "James Earl Jones",
+                "Nathan Lane"
+            ]
+        },
+        {
+            "Title": "The Departed",
+            "Plot": "An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in Boston. As both men become increasingly entangled in their double lives, the tension escalates, leading to a violent and unpredictable confrontation.",
+            "Category": "Movie",
+            "Directors": [
+                "Martin Scorsese"
+            ],
+            "Year": "2006",
+            "Writers": [
+                "William Monahan"
+            ],
+            "Genres": [
+                "Crime",
+                "Drama",
+                "Thriller"
+            ],
+            "Cast": [
+                "Leonardo DiCaprio",
+                "Matt Damon",
+                "Jack Nicholson",
+                "Mark Wahlberg"
+            ]
+        },
+        {
+            "Title": "Whiplash",
+            "Plot": "A talented young drummer, Andrew Neiman, enrolls at a prestigious music conservatory, where he is mentored by the ruthless and abusive instructor Terence Fletcher. As Fletcher pushes Andrew to his breaking point, the line between dedication and obsession blurs, leading to a dramatic climax.",
+            "Category": "Movie",
+            "Directors": [
+                "Damien Chazelle"
+            ],
+            "Year": "2014",
+            "Writers": [
+                "Damien Chazelle"
+            ],
+            "Genres": [
+                "Drama",
+                "Music"
+            ],
+            "Cast": [
+                "Miles Teller",
+                "J.K. Simmons",
+                "Paul Reiser",
+                "Melissa Benoist"
+            ]
+        },
+        {
+            "Title": "The Prestige",
+            "Plot": "Two magicians, Robert Angier and Alfred Borden, engage in a bitter rivalry to create the ultimate stage illusion. Their obsession with outdoing each other leads to tragic consequences, as secrets are revealed and lives are destroyed in their relentless pursuit of greatness.",
+            "Category": "Movie",
+            "Directors": [
+                "Christopher Nolan"
+            ],
+            "Year": "2006",
+            "Writers": [
+                "Jonathan Nolan",
+                "Christopher Nolan"
+            ],
+            "Genres": [
+                "Drama",
+                "Mystery",
+                "Sci-Fi"
+            ],
+            "Cast": [
+                "Hugh Jackman",
+                "Christian Bale",
+                "Michael Caine",
+                "Scarlett Johansson"
+            ]
+        },
+        {
+            "Title": "The Intouchables",
+            "Plot": "After a paragliding accident leaves him a quadriplegic, aristocrat Philippe hires Driss, a young man from the projects, as his caretaker. Despite their differences, an unlikely friendship forms between the two, bringing humor, adventure, and a fresh perspective on life to both.",
+            "Category": "Movie",
+            "Directors": [
+                "Olivier Nakache",
+                "Éric Toledano"
+            ],
+            "Year": "2011",
+            "Writers": [
+                "Olivier Nakache",
+                "Éric Toledano"
+            ],
+            "Genres": [
+                "Biography",
+                "Comedy",
+                "Drama"
+            ],
+            "Cast": [
+                "François Cluzet",
+                "Omar Sy",
+                "Anne Le Ny",
+                "Audrey Fleurot"
+            ]
+        },
+        {
+            "Title": "The Shining",
+            "Plot": "Jack Torrance, an aspiring writer and recovering alcoholic, takes a job as the winter caretaker of the isolated Overlook Hotel. As the hotel’s dark influence begins to take hold, Jack descends into madness, terrorizing his wife Wendy and son Danny, who has psychic abilities.",
+            "Category": "Movie",
+            "Directors": [
+                "Stanley Kubrick"
+            ],
+            "Year": "1980",
+            "Writers": [
+                "Stephen King",
+                "Stanley Kubrick",
+                "Diane Johnson"
+            ],
+            "Genres": [
+                "Drama",
+                "Horror"
+            ],
+            "Cast": [
+                "Jack Nicholson",
+                "Shelley Duvall",
+                "Danny Lloyd",
+                "Scatman Crothers"
+            ]
+        },
+        {
+            "Title": "Memento",
+            "Plot": "Leonard Shelby suffers from short-term memory loss, causing him to rely on notes, Polaroid photos, and tattoos to hunt down the man he believes killed his wife. As Leonard's story unfolds in reverse, the truth becomes increasingly elusive, leading to a shocking revelation.",
+            "Category": "Movie",
+            "Directors": [
+                "Christopher Nolan"
+            ],
+            "Year": "2000",
+            "Writers": [
+                "Jonathan Nolan",
+                "Christopher Nolan"
+            ],
+            "Genres": [
+                "Mystery",
+                "Thriller"
+            ],
+            "Cast": [
+                "Guy Pearce",
+                "Carrie-Anne Moss",
+                "Joe Pantoliano",
+                "Mark Boone Junior"
+            ]
+        },
+        {
+            "Title": "The Pianist",
+            "Plot": "Władysław Szpilman, a talented Jewish pianist in Warsaw, struggles to survive the horrors of World War II and the Holocaust. As the Nazi occupation intensifies, Szpilman is separated from his family and must rely on his wits and the kindness of strangers to stay alive.",
+            "Category": "Movie",
+            "Directors": [
+                "Roman Polanski"
+            ],
+            "Year": "2002",
+            "Writers": [
+                "Ronald Harwood"
+            ],
+            "Genres": [
+                "Biography",
+                "Drama",
+                "Music"
+            ],
+            "Cast": [
+                "Adrien Brody",
+                "Thomas Kretschmann",
+                "Frank Finlay",
+                "Maureen Lipman"
+            ]
+        },
+        {
+            "Title": "American History X",
+            "Plot": "Derek Vinyard, a former neo-Nazi, is released from prison after serving time for a racially motivated murder. As he tries to prevent his younger brother, Danny, from following in his footsteps, Derek reflects on the events that led to his radicalization and eventual transformation.",
+            "Category": "Movie",
+            "Directors": [
+                "Tony Kaye"
+            ],
+            "Year": "1998",
+            "Writers": [
+                "David McKenna"
+            ],
+            "Genres": [
+                "Drama"
+            ],
+            "Cast": [
+                "Edward Norton",
+                "Edward Furlong",
+                "Beverly D'Angelo",
+                "Avery Brooks"
+            ]
+        },
+        {
+            "Title": "The Wolf of Wall Street",
+            "Plot": "Jordan Belfort rises from a small-time stockbroker to a wealthy, high-flying mogul on Wall Street, indulging in a lifestyle of excess and corruption. As the FBI closes in on his illegal activities, Belfort faces the consequences of his reckless pursuit of wealth and power.",
+            "Category": "Movie",
+            "Directors": [
+                "Martin Scorsese"
+            ],
+            "Year": "2013",
+            "Writers": [
+                "Terence Winter"
+            ],
+            "Genres": [
+                "Biography",
+                "Comedy",
+                "Crime"
+            ],
+            "Cast": [
+                "Leonardo DiCaprio",
+                "Jonah Hill",
+                "Margot Robbie",
+                "Matthew McConaughey"
+            ]
+        },
+        {
+            "Title": "Braveheart",
+            "Plot": "Scottish warrior William Wallace leads a revolt against English rule after the execution of his wife. With a growing army, Wallace fights for Scotland's freedom, becoming a symbol of resistance and paying the ultimate price for his unwavering dedication to his cause.",
+            "Category": "Movie",
+            "Directors": [
+                "Mel Gibson"
+            ],
+            "Year": "1995",
+            "Writers": [
+                "Randall Wallace"
+            ],
+            "Genres": [
+                "Biography",
+                "Drama",
+                "History"
+            ],
+            "Cast": [
+                "Mel Gibson",
+                "Sophie Marceau",
+                "Patrick McGoohan",
+                "Angus Macfadyen"
+            ]
+        },
+        {
+            "Title": "Oldboy",
+            "Plot": "Oh Dae-su is imprisoned in a strange, solitary cell for 15 years without explanation. Upon his release, he embarks on a quest for revenge, uncovering shocking secrets about his captor and his own past in a twisted, psychological thriller that explores themes of vengeance and redemption.",
+            "Category": "Movie",
+            "Directors": [
+                "Park Chan-wook"
+            ],
+            "Year": "2003",
+            "Writers": [
+                "Garon Tsuchiya",
+                "Nobuaki Minegishi",
+                "Park Chan-wook"
+            ],
+            "Genres": [
+                "Action",
+                "Drama",
+                "Mystery"
+            ],
+            "Cast": [
+                "Choi Min-sik",
+                "Yoo Ji-tae",
+                "Kang Hye-jung",
+                "Kim Byeong-ok"
+            ]
+        }
+    ]
+}

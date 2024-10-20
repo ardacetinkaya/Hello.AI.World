@@ -12,7 +12,11 @@
 		<PackageReference Include="Microsoft.Extensions.AI" Version="9.0.0-preview.9.24507.7" />
 		<PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="9.0.0-preview.9.24507.7" />
 		<PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" Version="9.0.0-preview.9.24507.7" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0-rc.2.24473.5" />    
+		<PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.0.0-preview.9.24507.7" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0-rc.2.24473.5" /> 
+		<PackageReference Include="Azure.AI.OpenAI" Version="2.1.0-beta.1" />   
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.24.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.24.1-alpha" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Spectre.Console" Version="0.49.1" />
 	</ItemGroup>
@@ -21,6 +25,9 @@
 		<Content Include="appsettings.json">
       		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
     	</Content>
+		<Content Include="data.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   	</ItemGroup>
 
 </Project>

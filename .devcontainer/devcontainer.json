@@ -7,8 +7,8 @@
         "ghcr.io/devcontainers/features/common-utils:2": {},
         "ghcr.io/devcontainers/features/dotnet:2": {
             "version": "none",
-            "dotnetRuntimeVersions": "8.0",
-            "aspNetCoreRuntimeVersions": "8.0"
+            "dotnetRuntimeVersions": "9.0",
+            "aspNetCoreRuntimeVersions": "9.0"
         },
       "ghcr.io/prulloac/devcontainer-features/ollama:1": {},
       "sshd": "latest"
@@ -16,8 +16,8 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-dotnettools.csdevkit",
-				"ms-dotnettools.vscode-dotnet-runtime",
+		"ms-dotnettools.csdevkit",
+		"ms-dotnettools.vscode-dotnet-runtime",
                 "ms-azuretools.vscode-docker"
             ]
         }

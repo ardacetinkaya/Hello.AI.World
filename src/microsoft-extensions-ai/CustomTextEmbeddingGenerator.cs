@@ -3,7 +3,6 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Embeddings;
 
 #pragma warning disable SKEXP0001
-#pragma warning disable SKEXP0050
 public class CustomTextEmbeddingGenerator : ITextEmbeddingGenerationService
 {
     public IReadOnlyDictionary<string, object> Attributes => null;
@@ -18,11 +17,13 @@ public class CustomTextEmbeddingGenerator : ITextEmbeddingGenerationService
     public async Task<IList<ReadOnlyMemory<float>>> GenerateEmbeddingsAsync(IList<string> data, Kernel kernel = null, CancellationToken cancellationToken = default)
     {
         var list = new List<ReadOnlyMemory<float>>();
-        foreach (var item in data)
-        {
-            var embeddingForInput = await _generator.GenerateAsync(item);
-            list.Add(embeddingForInput[0].Vector);
+
+        var embeddingForInputs = await _generator.GenerateAsync(data);
+        
+        foreach(var embeddingForInput in embeddingForInputs){
+            list.Add(embeddingForInput.Vector);   
         }
+
 
         return list;
     }

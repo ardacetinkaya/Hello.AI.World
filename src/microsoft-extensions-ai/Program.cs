@@ -17,6 +17,7 @@ using Spectre.Console;
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json") //For some standard application settings
     .AddJsonFile("data.json") //Some custom data
+    .AddEnvironmentVariables()
     .Build();
 
 var builder = Host.CreateApplicationBuilder(args);
